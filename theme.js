@@ -123,27 +123,6 @@ const NEXORA_INFO = {
     });
   }
 
-  // Search Toggle
-  function initSearch() {
-    const trigger = document.getElementById('searchTrigger');
-    const close = document.getElementById('searchClose');
-    const panel = document.getElementById('fullSearch');
-    if (!trigger || !panel) return;
-
-    trigger.addEventListener('click', () => {
-      panel.classList.add('active');
-      panel.querySelector('input')?.focus();
-    });
-
-    close?.addEventListener('click', () => {
-      panel.classList.remove('active');
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') panel.classList.remove('active');
-    });
-  }
-
   // Post a Comment Toggle
   function initCommentsToggle() {
     const btn = document.getElementById('toggle-comments');
@@ -223,7 +202,6 @@ const NEXORA_INFO = {
   function runWhenReady() {
     initTheme();
     initHeader();
-    initSearch();
     initCommentsToggle();
     initScrollTop();
     initReadingProgress();
