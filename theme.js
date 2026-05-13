@@ -200,13 +200,14 @@ const NEXORA_INFO = {
 
   // Initialize
   function runWhenReady() {
-    initTheme();
-    initHeader();
-    initCommentsToggle();
-    initScrollTop();
-    initReadingProgress();
-    initImageOptimization();
-    initDeferredEmbeds();
+    console.log('Nexora: Initializing Theme Components...');
+    try { initTheme(); } catch(e) { console.error('Theme Toggle Error:', e); }
+    try { initHeader(); } catch(e) { console.error('Header Error:', e); }
+    try { initCommentsToggle(); } catch(e) { console.error('Comments Toggle Error:', e); }
+    try { initScrollTop(); } catch(e) { console.error('ScrollTop Error:', e); }
+    try { initReadingProgress(); } catch(e) { console.error('ReadingProgress Error:', e); }
+    try { initImageOptimization(); } catch(e) { console.error('ImageOpt Error:', e); }
+    try { initDeferredEmbeds(); } catch(e) { console.error('Embeds Error:', e); }
   }
 
   if (document.readyState === "complete" || document.readyState === "interactive") runWhenReady();

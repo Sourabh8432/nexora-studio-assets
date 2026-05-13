@@ -91,7 +91,7 @@
 
     // Summary Logic
     if (summaryEl && summaryWrapper) {
-      if (data.summary && data.summary.length > 20) {
+      if (data.summary && data.summary.length > 40 && !data.summary.includes('Processing')) {
         summaryEl.textContent = data.summary;
         summaryWrapper.style.display = 'block';
       } else {
@@ -101,7 +101,8 @@
 
     // Quick Take Logic (Professional Hide)
     if (quickTakeEl && quickTakeWrapper) {
-      if (data.quickTake && data.quickTake.length > 30) {
+      const isWeak = !data.quickTake || data.quickTake.length < 30 || data.quickTake.includes('Generating') || data.quickTake.includes('Key Insight:');
+      if (!isWeak) {
         quickTakeEl.textContent = data.quickTake;
         quickTakeWrapper.style.display = 'block';
       } else {
@@ -111,7 +112,8 @@
 
     // Highlights Logic (Professional Hide)
     if (kpEl && highlightsWrapper) {
-      if (Array.isArray(data.highlights) && data.highlights.length >= 2) {
+      const hasData = Array.isArray(data.highlights) && data.highlights.length >= 2 && !data.highlights[0].includes('Analyzing');
+      if (hasData) {
         kpEl.innerHTML = data.highlights.map(p => `<li>${p}</li>`).join('');
         highlightsWrapper.style.display = 'block';
       } else {
@@ -121,7 +123,8 @@
 
     // Next Steps Logic (Professional Hide)
     if (nextStepsEl && nextStepsWrapper) {
-      if (Array.isArray(data.nextSteps) && data.nextSteps.length >= 2) {
+      const hasData = Array.isArray(data.nextSteps) && data.nextSteps.length >= 2 && !data.nextSteps[0].includes('Preparing');
+      if (hasData) {
         nextStepsEl.innerHTML = data.nextSteps.map(step => `<li>${step}</li>`).join('');
         nextStepsWrapper.style.display = 'block';
       } else {
@@ -166,7 +169,7 @@
 
     const highlights = meaningfulSentences.slice(0, 3);
     const summary = meaningfulSentences.slice(0, 2).join(' ') || (sentences[0] ? sentences[0] : title);
-    const quickTake = meaningfulSentences[0] ? `Key Insight: ${meaningfulSentences[0]}` : `This article provides deep insights into ${title}.`;
+    const quickTake = meaningfulSentences[0] || `This article provides deep insights into ${title}.`;
 
     const keywords = Array.from(new Set(words
       .filter(word => word.length > 5)
