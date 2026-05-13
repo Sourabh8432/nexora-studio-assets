@@ -180,7 +180,13 @@ const NEXORA_INFO = {
       const type = section.getAttribute('data-media-feed');
       const grid = $('[data-media-grid]', section);
       
-      const entries = await fetchBloggerFeed(label, limit);
+      let entries = await fetchBloggerFeed(label, limit);
+      // Fallback: If label is empty, fetch recent posts
+      if (entries.length === 0) {
+        console.warn(`Nexora: No posts found for label "${label}". Falling back to recent posts.`);
+        entries = await fetchBloggerFeed('ALL', limit);
+      }
+
       if (grid && entries.length > 0) {
         grid.innerHTML = entries.map(e => renderMediaCard(getPostData(e), type)).join('');
       }
