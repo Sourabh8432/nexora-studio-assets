@@ -4,13 +4,16 @@
   var $$ = function(selector, context) { return (context || document).querySelectorAll(selector); };
 
   async function fetchBloggerFeed(label, limit) {
-    const feedUrl = label === 'ALL' 
-      ? `/feeds/posts/default?alt=json&max-results=${limit}` 
-      : `/feeds/posts/default/-/${label}?alt=json&max-results=${limit}`;
+    const safeLabel = (label || 'ALL').trim();
+    const safeLimit = parseInt(limit, 10) || 6;
+    const feedUrl = safeLabel === 'ALL'
+      ? `/feeds/posts/default?alt=json&max-results=${safeLimit}`
+      : `/feeds/posts/default/-/${encodeURIComponent(safeLabel)}?alt=json&max-results=${safeLimit}`;
     try {
       const response = await fetch(feedUrl);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
-      return data.feed.entry || [];
+      return data.feed && data.feed.entry ? data.feed.entry : [];
     } catch (err) {
       console.error('Nexora Feed Error:', err);
       return [];
@@ -65,12 +68,13 @@
   async function initMediaFeeds() {
     const sections = $$('[data-media-feed]');
     for (const section of sections) {
-      const label = section.getAttribute('data-label');
+      const label = section.getAttribute('data-label') || 'ALL';
       const limit = section.getAttribute('data-limit') || 4;
       const type = section.getAttribute('data-media-feed');
       const grid = $('[data-media-grid]', section);
       
-      const entries = await fetchBloggerFeed(label, limit);
+      let entries = await fetchBloggerFeed(label, limit);
+      if (entries.length === 0 && label !== 'ALL') entries = await fetchBloggerFeed('ALL', limit);
       if (grid && entries.length > 0) {
         grid.innerHTML = entries.map(e => renderMediaCard(getPostData(e), type)).join('');
       }
@@ -85,9 +89,12 @@
     const limit = config[1] || 6;
     const grid = $('[data-latest-grid]', block);
 
-    const entries = await fetchBloggerFeed(label, limit);
+    let entries = await fetchBloggerFeed(label, limit);
+    if (entries.length === 0 && label !== 'ALL') entries = await fetchBloggerFeed('ALL', limit);
     if (grid && entries.length > 0) {
       grid.innerHTML = entries.map(e => renderLatestCard(getPostData(e))).join('');
+    } else if (grid) {
+      grid.innerHTML = '<div class="empty-state"><h2>No posts found</h2><p>Publish posts in Blogger or set this widget to ALL|6.</p></div>';
     }
   }
 

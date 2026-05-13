@@ -29,13 +29,40 @@
   function updateAssistantUI(data) {
     const summaryEl = document.getElementById('aiSummary');
     const kpEl = document.getElementById('aiKeyPoints');
+    const difficultyEl = document.getElementById('aiDifficulty');
+    const toneEl = document.getElementById('aiTone');
+    const readTimeEl = document.getElementById('aiReadTime');
+    const keywordsWrapper = document.getElementById('aiKeywordsWrapper');
+    const keywordsEl = document.getElementById('aiKeywords');
     if (summaryEl) summaryEl.textContent = data.summary || '';
     if (kpEl) kpEl.innerHTML = (data.highlights || []).map(p => `<li>${p}</li>`).join('');
-    // ... additional UI updates ...
+    if (difficultyEl) difficultyEl.textContent = data.difficulty || 'Standard';
+    if (toneEl) toneEl.textContent = data.tone || 'Informative';
+    if (readTimeEl && data.readTime) readTimeEl.textContent = data.readTime;
+    if (keywordsEl && data.keywords && data.keywords.length) {
+      keywordsEl.innerHTML = data.keywords.map(tag => `<span>${tag}</span>`).join('');
+      if (keywordsWrapper) keywordsWrapper.style.display = '';
+    }
   }
 
   function runLocalAI(title, text, assistant) {
-    // Simple extraction logic as fallback
+    const clean = (text || '').replace(/\s+/g, ' ').trim();
+    const sentences = clean.match(/[^.!?]+[.!?]+/g) || [clean];
+    const highlights = sentences.slice(0, 3).map(sentence => sentence.trim()).filter(Boolean);
+    const words = clean.split(/\s+/).filter(Boolean);
+    const keywords = Array.from(new Set(words
+      .filter(word => word.length > 5)
+      .map(word => '#' + word.replace(/[^a-z0-9]/gi, '').toLowerCase())
+      .filter(word => word.length > 2))).slice(0, 5);
+
+    updateAssistantUI({
+      summary: highlights.slice(0, 2).join(' ') || title,
+      highlights: highlights.length ? highlights : ['Key points will appear after adding article content.'],
+      keywords: keywords,
+      tone: 'Informative',
+      difficulty: 'Standard',
+      readTime: Math.max(1, Math.ceil(words.length / 200)) + ' min read'
+    });
     assistant.classList.remove('is-thinking');
     initAIVoiceReader(title + '. ' + text);
   }
@@ -70,10 +97,13 @@
       calculateReadingTime(body.innerText);
     }
     if (!assistant) return;
+    assistant.style.display = '';
     const key = getGeminiApiKey();
     if (body) {
       assistant.classList.add('is-thinking');
-      fetchGeminiAI(key, document.title, body.innerText.slice(0, 4000), assistant);
+      const articleText = body.innerText.slice(0, 4000);
+      if (key) fetchGeminiAI(key, document.title, articleText, assistant);
+      else runLocalAI(document.title, articleText, assistant);
     }
   }
 
