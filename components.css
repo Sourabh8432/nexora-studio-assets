@@ -1303,7 +1303,7 @@ pre:hover .copy-code-btn { opacity: 1; }
   line-height: 1.6;
 }
 .ai-assistant-grid { display: grid; gap: 20px; }
-.ai-assistant-main { display: grid; gap: 40px; }
+.ai-assistant-main { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 40px; }
 @media (max-width: 850px) { .ai-assistant-main { grid-template-columns: 1fr; gap: 24px; } }
 .ai-assistant-section { display: grid; gap: 8px; }
 .ai-assistant-label {
@@ -1318,6 +1318,7 @@ pre:hover .copy-code-btn { opacity: 1; }
   font-size: 15px;
   color: var(--text-color);
   font-weight: 500;
+  line-height: 1.7;
 }
 .ai-assistant-keypoints {
   list-style: none;
@@ -2203,6 +2204,7 @@ body.is-error .content-area { grid-column: 1 / -1 !important; width: 100%; }
   margin-bottom: 6px;
   letter-spacing: 0;
 }
+.sidebar-latest-title a { color: var(--text-color); }
 .sidebar-latest-snippet {
   color: var(--text-light);
   font-size: 12px;

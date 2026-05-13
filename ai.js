@@ -14,38 +14,51 @@
 
   async function fetchGeminiAI(key, title, content, assistant) {
     try {
-      const prompt = `Analyze this article: { "summary": "2 concise sentences", "highlights": ["3 factual key takeaways"], "keywords": ["5 SEO hashtags"], "tone": "Informative", "difficulty": "Standard" } Article Title: ${title} Content: ${content}`;
+      const prompt = `Analyze this article and return strict JSON with keys: summary, quickTake, highlights, nextSteps, keywords, tone, difficulty, readTime. summary should be 2 concise sentences, quickTake should be one practical insight, highlights should have 3 factual bullets, nextSteps should have 3 short action steps, keywords should have 5 SEO-style hashtags. Article Title: ${title} Content: ${content}`;
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
       });
       const data = await response.json();
       const aiText = data.candidates[0].content.parts[0].text;
       const result = JSON.parse(aiText.replace(/```json|```/g, '').trim());
-      updateAssistantUI(result);
+      updateAssistantUI({
+        summary: result.summary,
+        quickTake: result.quickTake,
+        highlights: Array.isArray(result.highlights) ? result.highlights : [],
+        nextSteps: Array.isArray(result.nextSteps) ? result.nextSteps : [],
+        keywords: Array.isArray(result.keywords) ? result.keywords : [],
+        tone: result.tone,
+        difficulty: result.difficulty,
+        readTime: result.readTime
+      });
       initAIVoiceReader(title + '. ' + content);
     } catch (err) { runLocalAI(title, content, assistant); } finally { assistant.classList.remove('is-thinking'); }
   }
 
   function updateAssistantUI(data) {
     const summaryEl = document.getElementById('aiSummary');
+    const quickTakeEl = document.getElementById('aiQuickTake');
     const kpEl = document.getElementById('aiKeyPoints');
+    const nextStepsEl = document.getElementById('aiNextSteps');
     const difficultyEl = document.getElementById('aiDifficulty');
     const toneEl = document.getElementById('aiTone');
     const readTimeEl = document.getElementById('aiReadTime');
     const keywordsWrapper = document.getElementById('aiKeywordsWrapper');
     const keywordsEl = document.getElementById('aiKeywords');
     if (summaryEl) summaryEl.textContent = data.summary || '';
+    if (quickTakeEl) quickTakeEl.textContent = data.quickTake || data.summary || '';
     if (kpEl) kpEl.innerHTML = (data.highlights || []).map(p => `<li>${p}</li>`).join('');
+    if (nextStepsEl) nextStepsEl.innerHTML = (data.nextSteps || []).map(step => `<li>${step}</li>`).join('');
     if (difficultyEl) difficultyEl.textContent = data.difficulty || 'Standard';
     if (toneEl) toneEl.textContent = data.tone || 'Informative';
     if (readTimeEl && data.readTime) readTimeEl.textContent = data.readTime;
     if (keywordsEl && data.keywords && data.keywords.length) {
-      keywordsEl.innerHTML = data.keywords.map(tag => `<span>${tag}</span>`).join('');
+      keywordsEl.innerHTML = data.keywords.map(tag => `<span class="ai-tag">${tag}</span>`).join('');
       if (keywordsWrapper) keywordsWrapper.style.display = '';
     }
   }
 
-  function runLocalAI(title, text, assistant) {
+  function buildLocalInsights(title, text) {
     const clean = (text || '').replace(/\s+/g, ' ').trim();
     const sentences = clean.match(/[^.!?]+[.!?]+/g) || [clean];
     const highlights = sentences.slice(0, 3).map(sentence => sentence.trim()).filter(Boolean);
@@ -54,15 +67,26 @@
       .filter(word => word.length > 5)
       .map(word => '#' + word.replace(/[^a-z0-9]/gi, '').toLowerCase())
       .filter(word => word.length > 2))).slice(0, 5);
+    const nextSteps = [
+      'Scan the highlights before reading the full article.',
+      'Open linked resources and examples mentioned in the post.',
+      'Save the most useful ideas as actionable notes.'
+    ];
 
-    updateAssistantUI({
+    return {
       summary: highlights.slice(0, 2).join(' ') || title,
+      quickTake: highlights[0] || `This article focuses on ${title}.`,
       highlights: highlights.length ? highlights : ['Key points will appear after adding article content.'],
+      nextSteps: nextSteps,
       keywords: keywords,
       tone: 'Informative',
-      difficulty: 'Standard',
+      difficulty: words.length > 1200 ? 'Advanced' : (words.length > 600 ? 'Standard' : 'Easy'),
       readTime: Math.max(1, Math.ceil(words.length / 200)) + ' min read'
-    });
+    };
+  }
+
+  function runLocalAI(title, text, assistant) {
+    updateAssistantUI(buildLocalInsights(title, text));
     assistant.classList.remove('is-thinking');
     initAIVoiceReader(title + '. ' + text);
   }

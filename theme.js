@@ -16,6 +16,47 @@ function escapeHtml(value) {
   });
 }
 
+function optimizeImageUrl(url) {
+  if (!url || /^data:/i.test(url)) return url;
+  try {
+    var parsed = new URL(url, window.location.origin);
+    var host = parsed.hostname.toLowerCase();
+
+    if (host.indexOf('images.unsplash.com') !== -1 || host.indexOf('source.unsplash.com') !== -1) {
+      parsed.searchParams.set('auto', 'format');
+      parsed.searchParams.set('fm', 'webp');
+      if (!parsed.searchParams.has('q')) parsed.searchParams.set('q', '80');
+      return parsed.toString();
+    }
+
+    if (host.indexOf('images.ctfassets.net') !== -1 || host.indexOf('cdn.sanity.io') !== -1) {
+      parsed.searchParams.set('fm', 'webp');
+      if (!parsed.searchParams.has('q')) parsed.searchParams.set('q', '80');
+      return parsed.toString();
+    }
+
+    if (host.indexOf('res.cloudinary.com') !== -1 && parsed.pathname.indexOf('/upload/') !== -1 && parsed.pathname.indexOf('/f_auto') === -1) {
+      parsed.pathname = parsed.pathname.replace('/upload/', '/upload/f_auto,q_auto/');
+      return parsed.toString();
+    }
+
+    return parsed.toString();
+  } catch (error) {
+    return url;
+  }
+}
+
+function optimizeSrcset(srcset) {
+  if (!srcset) return srcset;
+  return srcset.split(',').map(function(part) {
+    var trimmed = part.trim();
+    if (!trimmed) return trimmed;
+    var pieces = trimmed.split(/\s+/);
+    var optimized = optimizeImageUrl(pieces[0]);
+    return [optimized].concat(pieces.slice(1)).join(' ');
+  }).join(', ');
+}
+
 const NEXORA_INFO = {
   name: "Nexora Studio AI",
   version: "1.2.0",
@@ -90,14 +131,38 @@ const NEXORA_INFO = {
   }
 
   function initImageOptimization() {
-    const images = document.querySelectorAll('.post-body img');
+    const images = document.querySelectorAll('.post-body img, .single-body img, .media-thumb img, .latest-thumb img, .sidebar-latest-thumb, .nexora-hero-image, .single-hero, .topic-icon img');
     images.forEach((img, index) => {
       if (!img.getAttribute('alt')) img.setAttribute('alt', document.title + ' Image ' + (index + 1));
-      if (index === 0) img.setAttribute('fetchpriority', 'high');
-      else { img.setAttribute('loading', 'lazy'); img.setAttribute('fetchpriority', 'low'); }
+      if (!img.dataset.nexoraOptimized) {
+        var src = img.getAttribute('src');
+        var srcset = img.getAttribute('srcset');
+        if (src) img.setAttribute('src', optimizeImageUrl(src));
+        if (srcset) img.setAttribute('srcset', optimizeSrcset(srcset));
+        img.dataset.nexoraOptimized = 'true';
+      }
+      if (index === 0 || img.classList.contains('single-hero') || img.classList.contains('nexora-hero-image')) {
+        img.setAttribute('fetchpriority', 'high');
+      } else {
+        img.setAttribute('loading', 'lazy');
+        img.setAttribute('fetchpriority', 'low');
+      }
       img.setAttribute('decoding', 'async');
-      if (!img.getAttribute('width')) img.setAttribute('width', '1200');
-      if (!img.getAttribute('height')) img.setAttribute('height', '630');
+      if (!img.getAttribute('width') && img.closest('.single-body, .post-body, .media-thumb, .latest-thumb')) img.setAttribute('width', '1200');
+      if (!img.getAttribute('height') && img.closest('.single-body, .post-body, .media-thumb, .latest-thumb')) img.setAttribute('height', '630');
+    });
+  }
+
+  function initDeferredEmbeds() {
+    const embeds = document.querySelectorAll('.single-body iframe, .post-body iframe, .single-body video, .post-body video');
+    embeds.forEach((embed, index) => {
+      if (!embed.getAttribute('loading')) embed.setAttribute('loading', 'lazy');
+      if (embed.tagName === 'IFRAME' && !embed.getAttribute('title')) {
+        embed.setAttribute('title', 'Embedded content ' + (index + 1));
+      }
+      if (embed.tagName === 'VIDEO' && !embed.getAttribute('preload')) {
+        embed.setAttribute('preload', 'metadata');
+      }
     });
   }
 
@@ -108,6 +173,7 @@ const NEXORA_INFO = {
     initScrollTop();
     initReadingProgress();
     initImageOptimization();
+    initDeferredEmbeds();
   }
 
   if (document.readyState === "complete" || document.readyState === "interactive") runWhenReady();
@@ -193,6 +259,25 @@ const NEXORA_INFO = {
     `;
   }
 
+  function renderSidebarLatestCard(post) {
+    if (!post) return '';
+    return `
+      <article class="sidebar-latest-card">
+        <a href="${post.url}">
+          <img class="sidebar-latest-thumb" src="${post.thumb || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgf_example_logo.png'}" alt="${post.title}" loading="lazy"/>
+        </a>
+        <div>
+          <h3 class="sidebar-latest-title"><a href="${post.url}">${post.title}</a></h3>
+          <p class="sidebar-latest-snippet">${post.snippet}...</p>
+        </div>
+      </article>
+    `;
+  }
+
+  function renderArchiveItem(label, count, url) {
+    return `<li><a href="${url}"><span>${label}</span><span>${count}</span></a></li>`;
+  }
+
   async function initMediaFeeds() {
     const sections = $$('[data-media-feed]');
     console.log(`Nexora: Found ${sections.length} media feed sections.`);
@@ -253,10 +338,62 @@ const NEXORA_INFO = {
     }
   }
 
+  async function initSidebarLatest() {
+    const widgets = $$('[data-sidebar-latest]');
+    for (const widget of widgets) {
+      const config = (widget.getAttribute('data-config') || 'ALL|5').split('|');
+      const label = config[0] || 'ALL';
+      const limit = parseInt(config[1], 10) || 5;
+      const list = $('[data-sidebar-latest-list]', widget);
+      if (!list) continue;
+
+      let entries = await fetchBloggerFeed(label, limit);
+      if (entries.length === 0 && label !== 'ALL') entries = await fetchBloggerFeed('ALL', limit);
+      if (entries.length > 0) list.innerHTML = entries.map(e => renderSidebarLatestCard(getPostData(e))).join('');
+    }
+  }
+
+  async function initSidebarArchive() {
+    const widgets = $$('[data-sidebar-archive]');
+    for (const widget of widgets) {
+      const limit = parseInt(widget.getAttribute('data-limit'), 10) || 12;
+      const list = $('[data-sidebar-archive-list]', widget);
+      if (!list) continue;
+
+      const entries = await fetchBloggerFeed('ALL', Math.max(limit * 10, 50));
+      const buckets = [];
+      const seen = {};
+
+      entries.forEach(function(entry) {
+        if (!entry.published || !entry.link) return;
+        const date = new Date(entry.published.$t);
+        if (isNaN(date.getTime())) return;
+        const year = date.getFullYear();
+        const month = date.toLocaleDateString('en-US', { month: 'long' });
+        const key = year + '-' + String(date.getMonth() + 1).padStart(2, '0');
+        if (!seen[key]) {
+          seen[key] = {
+            label: month + ' ' + year,
+            count: 0,
+            url: '/search?updated-max=' + year + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-31T23:59:00'
+          };
+          buckets.push(seen[key]);
+        }
+        seen[key].count += 1;
+      });
+
+      list.innerHTML = buckets.slice(0, limit).map(function(bucket) {
+        return renderArchiveItem(bucket.label, bucket.count, bucket.url);
+      }).join('');
+    }
+  }
+
   function runWhenReady() {
     initMediaFeeds();
     initLatestHome();
     initRelatedPosts();
+    initSidebarLatest();
+    initSidebarArchive();
   }
 
   if (document.readyState === "complete" || document.readyState === "interactive") runWhenReady();
