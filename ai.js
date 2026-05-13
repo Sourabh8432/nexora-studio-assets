@@ -12,24 +12,57 @@
     return match ? match[0] : '';
   }
 
+  function getTextFromCandidate(candidate) {
+    const parts = candidate && candidate.content && Array.isArray(candidate.content.parts) ? candidate.content.parts : [];
+    return parts.map(part => part && part.text ? part.text : '').join('\n').trim();
+  }
+
+  function normalizeGroundingSources(candidate) {
+    const metadata = candidate && candidate.groundingMetadata ? candidate.groundingMetadata : null;
+    const chunks = metadata && Array.isArray(metadata.groundingChunks) ? metadata.groundingChunks : [];
+    const unique = [];
+    const seen = {};
+
+    chunks.forEach(function(chunk) {
+      const web = chunk && chunk.web ? chunk.web : null;
+      if (!web || !web.uri || seen[web.uri]) return;
+      seen[web.uri] = true;
+      unique.push({
+        title: web.title || web.uri,
+        url: web.uri
+      });
+    });
+
+    return unique.slice(0, 4);
+  }
+
   async function fetchGeminiAI(key, title, content, assistant) {
     try {
-      const prompt = `Analyze this article and return strict JSON with keys: summary, quickTake, highlights, nextSteps, keywords, tone, difficulty, readTime. summary should be 2 concise sentences, quickTake should be one practical insight, highlights should have 3 factual bullets, nextSteps should have 3 short action steps, keywords should have 5 SEO-style hashtags. Article Title: ${title} Content: ${content}`;
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      const fallback = buildLocalInsights(title, content);
+      const prompt = `Analyze this article using grounded web knowledge where useful and return strict JSON with keys: summary, quickTake, highlights, nextSteps, keywords, tone, difficulty, readTime. summary should be 2 concise sentences, quickTake should be one practical insight, highlights should have 3 factual bullets, nextSteps should have 3 short action steps, keywords should have 5 SEO-style hashtags. Article Title: ${title} Content: ${content}`;
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${key}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          tools: [{ google_search: {} }]
+        })
       });
       const data = await response.json();
-      const aiText = data.candidates[0].content.parts[0].text;
+      const candidate = data && data.candidates && data.candidates[0] ? data.candidates[0] : null;
+      const aiText = getTextFromCandidate(candidate);
+      if (!aiText) throw new Error('Empty AI response');
       const result = JSON.parse(aiText.replace(/```json|```/g, '').trim());
       updateAssistantUI({
-        summary: result.summary,
-        quickTake: result.quickTake,
-        highlights: Array.isArray(result.highlights) ? result.highlights : [],
-        nextSteps: Array.isArray(result.nextSteps) ? result.nextSteps : [],
-        keywords: Array.isArray(result.keywords) ? result.keywords : [],
-        tone: result.tone,
-        difficulty: result.difficulty,
-        readTime: result.readTime
+        summary: result.summary || fallback.summary,
+        quickTake: result.quickTake || fallback.quickTake,
+        highlights: Array.isArray(result.highlights) && result.highlights.length ? result.highlights : fallback.highlights,
+        nextSteps: Array.isArray(result.nextSteps) && result.nextSteps.length ? result.nextSteps : fallback.nextSteps,
+        keywords: Array.isArray(result.keywords) && result.keywords.length ? result.keywords : fallback.keywords,
+        tone: result.tone || fallback.tone,
+        difficulty: result.difficulty || fallback.difficulty,
+        readTime: result.readTime || fallback.readTime,
+        sources: normalizeGroundingSources(candidate)
       });
       initAIVoiceReader(title + '. ' + content);
     } catch (err) { runLocalAI(title, content, assistant); } finally { assistant.classList.remove('is-thinking'); }
@@ -45,10 +78,17 @@
     const readTimeEl = document.getElementById('aiReadTime');
     const keywordsWrapper = document.getElementById('aiKeywordsWrapper');
     const keywordsEl = document.getElementById('aiKeywords');
+    const sourcesWrapper = document.getElementById('aiSourcesWrapper');
+    const sourcesEl = document.getElementById('aiSources');
     if (summaryEl) summaryEl.textContent = data.summary || '';
     if (quickTakeEl) quickTakeEl.textContent = data.quickTake || data.summary || '';
     if (kpEl) kpEl.innerHTML = (data.highlights || []).map(p => `<li>${p}</li>`).join('');
-    if (nextStepsEl) nextStepsEl.innerHTML = (data.nextSteps || []).map(step => `<li>${step}</li>`).join('');
+    if (nextStepsEl) {
+      const nextSteps = Array.isArray(data.nextSteps) && data.nextSteps.length
+        ? data.nextSteps
+        : ['Read the summary first.', 'Review the highlights.', 'Apply one key idea from this post.'];
+      nextStepsEl.innerHTML = nextSteps.map(step => `<li>${step}</li>`).join('');
+    }
     if (difficultyEl) difficultyEl.textContent = data.difficulty || 'Standard';
     if (toneEl) toneEl.textContent = data.tone || 'Informative';
     if (readTimeEl && data.readTime) readTimeEl.textContent = data.readTime;
@@ -56,12 +96,21 @@
       keywordsEl.innerHTML = data.keywords.map(tag => `<span class="ai-tag">${tag}</span>`).join('');
       if (keywordsWrapper) keywordsWrapper.style.display = '';
     }
+    if (sourcesEl && data.sources && data.sources.length) {
+      sourcesEl.innerHTML = data.sources.map((source, index) => `<a href="${source.url}" target="_blank" rel="noopener noreferrer">${index + 1}. ${source.title}</a>`).join('');
+      if (sourcesWrapper) sourcesWrapper.style.display = '';
+    }
   }
 
   function buildLocalInsights(title, text) {
     const clean = (text || '').replace(/\s+/g, ' ').trim();
     const sentences = clean.match(/[^.!?]+[.!?]+/g) || [clean];
-    const highlights = sentences.slice(0, 3).map(sentence => sentence.trim()).filter(Boolean);
+    const highlights = sentences
+      .map(sentence => sentence.trim())
+      .filter(Boolean)
+      .filter(sentence => sentence.length > 40)
+      .filter(sentence => sentence.toLowerCase() !== String(title || '').trim().toLowerCase())
+      .slice(0, 3);
     const words = clean.split(/\s+/).filter(Boolean);
     const keywords = Array.from(new Set(words
       .filter(word => word.length > 5)
@@ -79,6 +128,7 @@
       highlights: highlights.length ? highlights : ['Key points will appear after adding article content.'],
       nextSteps: nextSteps,
       keywords: keywords,
+      sources: [],
       tone: 'Informative',
       difficulty: words.length > 1200 ? 'Advanced' : (words.length > 600 ? 'Standard' : 'Easy'),
       readTime: Math.max(1, Math.ceil(words.length / 200)) + ' min read'
@@ -126,6 +176,7 @@
     if (body) {
       assistant.classList.add('is-thinking');
       const articleText = body.innerText.slice(0, 4000);
+      updateAssistantUI(buildLocalInsights(document.title, articleText));
       if (key) fetchGeminiAI(key, document.title, articleText, assistant);
       else runLocalAI(document.title, articleText, assistant);
     }
