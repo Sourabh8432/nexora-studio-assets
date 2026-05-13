@@ -57,6 +57,19 @@ function optimizeSrcset(srcset) {
   }).join(', ');
 }
 
+function extractFirstContentImage(html) {
+  if (!html) return '';
+  const matches = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  return matches && matches[1] ? matches[1] : '';
+}
+
+function isWeakThumbnail(url) {
+  if (!url) return true;
+  return /img\.youtube\.com\/vi\/.*\/default\.jpg/i.test(url) ||
+    /blogger\.googleusercontent\.com\/img\/b\/R29vZ2xl\/AVvXsEgf_example_logo/i.test(url) ||
+    /via\.placeholder\.com/i.test(url);
+}
+
 const NEXORA_INFO = {
   name: "Nexora Studio AI",
   version: "1.2.0",
@@ -211,15 +224,33 @@ const NEXORA_INFO = {
       const title = entry.title.$t;
       const altLink = entry.link.find(l => l.rel === 'alternate');
       const url = altLink ? altLink.href : '#';
+      const contentHtml = entry.content ? entry.content.$t : (entry.summary ? entry.summary.$t : '');
+      const firstImage = extractFirstContentImage(contentHtml);
+      
       let thumb = '';
-      if (entry.media$thumbnail) thumb = entry.media$thumbnail.url.replace('s72-c', 'w600-h400-c');
-      else if (entry.content && entry.content.$t.includes('<img')) {
-         const match = entry.content.$t.match(/<img.*?src=["'](.*?)["']/);
-         if (match) thumb = match[1];
+      if (entry.media$thumbnail) {
+        // High-res version of Blogger thumb
+        thumb = entry.media$thumbnail.url.replace('s72-c', 'w1200-h630-p-k-no-nu').replace('s1600', 'w1200-h630-p-k-no-nu');
       }
-      const snippet = entry.summary ? entry.summary.$t : (entry.content ? entry.content.$t.replace(/<[^>]*>/g, '').substring(0, 100) : '');
+
+      // If Blogger thumb is default/weak, use first image from content
+      if ((!thumb || isWeakThumbnail(thumb)) && firstImage) {
+        thumb = firstImage;
+      }
+
+      // Final fallback if everything fails
+      const finalThumb = thumb || firstImage || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgf_example_logo.png';
+      
+      const snippet = entry.summary ? entry.summary.$t : (contentHtml ? contentHtml.replace(/<[^>]*>/g, '').substring(0, 150) : '');
       const date = entry.published ? new Date(entry.published.$t).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
-      return { title, url, thumb, snippet, date };
+      
+      return { 
+        title, 
+        url, 
+        thumb: optimizeImageUrl(finalThumb), 
+        snippet: cleanText(snippet), 
+        date 
+      };
     } catch (e) {
       console.error('Nexora: Error parsing entry', e);
       return null;
@@ -232,7 +263,7 @@ const NEXORA_INFO = {
     return `
       <div class="media-card ${isPodcast ? 'podcast-item' : ''}">
         <a href="${post.url}" class="media-thumb">
-          <img src="${post.thumb || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgf_example_logo.png'}" alt="${post.title}" loading="lazy"/>
+          <img src="${post.thumb}" alt="${post.title}" loading="lazy"/>
           ${!isPodcast ? '<span class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>' : ''}
         </a>
         <div class="media-info">
@@ -248,7 +279,7 @@ const NEXORA_INFO = {
     return `
       <div class="latest-card">
         <a href="${post.url}" class="latest-thumb">
-          <img src="${post.thumb || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgf_example_logo.png'}" alt="${post.title}" loading="lazy"/>
+          <img src="${post.thumb}" alt="${post.title}" loading="lazy"/>
         </a>
         <div class="latest-content">
           <span class="latest-date">${post.date}</span>
@@ -264,7 +295,7 @@ const NEXORA_INFO = {
     return `
       <article class="sidebar-latest-card">
         <a href="${post.url}">
-          <img class="sidebar-latest-thumb" src="${post.thumb || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgf_example_logo.png'}" alt="${post.title}" loading="lazy"/>
+          <img class="sidebar-latest-thumb" src="${post.thumb}" alt="${post.title}" loading="lazy"/>
         </a>
         <div>
           <h3 class="sidebar-latest-title"><a href="${post.url}">${post.title}</a></h3>

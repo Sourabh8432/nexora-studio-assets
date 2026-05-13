@@ -55,7 +55,7 @@
       const result = JSON.parse(aiText.replace(/```json|```/g, '').trim());
       updateAssistantUI({
         summary: result.summary || fallback.summary,
-        quickTake: result.quickTake || fallback.quickTake,
+        quickTake: result.quickTake || result.summary || fallback.quickTake,
         highlights: Array.isArray(result.highlights) && result.highlights.length ? result.highlights : fallback.highlights,
         nextSteps: Array.isArray(result.nextSteps) && result.nextSteps.length ? result.nextSteps : fallback.nextSteps,
         keywords: Array.isArray(result.keywords) && result.keywords.length ? result.keywords : fallback.keywords,
@@ -105,33 +105,47 @@
   function buildLocalInsights(title, text) {
     const clean = (text || '').replace(/\s+/g, ' ').trim();
     const sentences = clean.match(/[^.!?]+[.!?]+/g) || [clean];
-    const highlights = sentences
-      .map(sentence => sentence.trim())
-      .filter(Boolean)
-      .filter(sentence => sentence.length > 40)
-      .filter(sentence => sentence.toLowerCase() !== String(title || '').trim().toLowerCase())
-      .slice(0, 3);
     const words = clean.split(/\s+/).filter(Boolean);
+    
+    // Improved sentence filtering for meaningful highlights
+    const meaningfulSentences = sentences
+      .map(s => s.trim())
+      .filter(s => s.length > 50 && s.length < 250)
+      .filter(s => !/^(about|author|copyright|published|updated)/i.test(s))
+      .filter(s => s.toLowerCase() !== String(title || '').trim().toLowerCase());
+
+    const highlights = meaningfulSentences.slice(0, 3);
+    const summary = meaningfulSentences.slice(0, 2).join(' ') || (sentences[0] ? sentences[0] : title);
+    const quickTake = meaningfulSentences[0] ? `Key Insight: ${meaningfulSentences[0]}` : `This article provides deep insights into ${title}.`;
+
     const keywords = Array.from(new Set(words
       .filter(word => word.length > 5)
-      .map(word => '#' + word.replace(/[^a-z0-9]/gi, '').toLowerCase())
-      .filter(word => word.length > 2))).slice(0, 5);
+      .map(word => word.replace(/[^a-z0-9]/gi, '').toLowerCase())
+      .filter(word => word.length > 4))).slice(0, 5);
+
+    // Create "Search Results" links even without API
+    const sources = keywords.slice(0, 3).map(kw => ({
+      title: `Research: ${kw.charAt(0).toUpperCase() + kw.slice(1)}`,
+      url: `https://www.google.com/search?q=${encodeURIComponent(kw + ' ' + title)}`
+    }));
+
     const nextSteps = [
-      'Scan the highlights before reading the full article.',
-      'Open linked resources and examples mentioned in the post.',
-      'Save the most useful ideas as actionable notes.'
-    ];
+      `Deep dive into the core concepts of ${title} mentioned above.`,
+      'Examine the specific examples and case studies in the text.',
+      'Check the recommended research links to explore related topics.',
+      'Apply the primary takeaway to your current workflow.'
+    ].slice(0, 3);
 
     return {
-      summary: highlights.slice(0, 2).join(' ') || title,
-      quickTake: highlights[0] || `This article focuses on ${title}.`,
-      highlights: highlights.length ? highlights : ['Key points will appear after adding article content.'],
+      summary: summary,
+      quickTake: quickTake,
+      highlights: highlights.length ? highlights : [`${title} offers a comprehensive look at this topic with detailed explanations.`],
       nextSteps: nextSteps,
-      keywords: keywords,
-      sources: [],
+      keywords: keywords.map(kw => '#' + kw),
+      sources: sources,
       tone: 'Informative',
       difficulty: words.length > 1200 ? 'Advanced' : (words.length > 600 ? 'Standard' : 'Easy'),
-      readTime: Math.max(1, Math.ceil(words.length / 200)) + ' min read'
+      readTime: Math.max(1, Math.ceil(words.length / 200)) + ' MIN READ'
     };
   }
 
