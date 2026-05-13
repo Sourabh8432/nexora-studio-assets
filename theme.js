@@ -83,13 +83,18 @@ const NEXORA_INFO = {
   function initTheme() {
     const toggle = document.getElementById('themeToggle');
     if (!toggle) return;
-    let theme = localStorage.getItem('theme') || 'light';
-    toggle.setAttribute('aria-pressed', theme === 'dark');
+    
+    // Set initial state from localStorage
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    toggle.setAttribute('aria-pressed', savedTheme === 'dark');
+
     toggle.addEventListener('click', () => {
-      theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
-      toggle.setAttribute('aria-pressed', theme === 'dark');
+      const current = document.documentElement.getAttribute('data-theme');
+      const target = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', target);
+      localStorage.setItem('theme', target);
+      toggle.setAttribute('aria-pressed', target === 'dark');
     });
   }
 
@@ -100,19 +105,54 @@ const NEXORA_INFO = {
     if (!mobileBtn || !mobileNav) return;
 
     const setMenuState = function(isOpen) {
-      mobileNav.classList.toggle('is-open', isOpen);
+      mobileNav.classList.toggle('mobile-active', isOpen);
       mobileBtn.classList.toggle('is-active', isOpen);
       mobileBtn.setAttribute('aria-expanded', String(isOpen));
+      document.body.style.overflow = isOpen ? 'hidden' : '';
     };
 
-    mobileBtn.addEventListener('click', function() {
-      setMenuState(!mobileNav.classList.contains('is-open'));
+    mobileBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      setMenuState(!mobileNav.classList.contains('mobile-active'));
     });
 
     document.addEventListener('click', function(event) {
       if (!mobileNav.contains(event.target) && !mobileBtn.contains(event.target)) {
         setMenuState(false);
       }
+    });
+  }
+
+  // Search Toggle
+  function initSearch() {
+    const trigger = document.getElementById('searchTrigger');
+    const close = document.getElementById('searchClose');
+    const panel = document.getElementById('fullSearch');
+    if (!trigger || !panel) return;
+
+    trigger.addEventListener('click', () => {
+      panel.classList.add('active');
+      panel.querySelector('input')?.focus();
+    });
+
+    close?.addEventListener('click', () => {
+      panel.classList.remove('active');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') panel.classList.remove('active');
+    });
+  }
+
+  // Post a Comment Toggle
+  function initCommentsToggle() {
+    const btn = document.getElementById('toggle-comments');
+    const wrapper = document.getElementById('comments-wrapper');
+    if (!btn || !wrapper) return;
+    btn.addEventListener('click', () => {
+      const isHidden = wrapper.style.display === 'none' || !wrapper.style.display;
+      wrapper.style.display = isHidden ? 'block' : 'none';
+      btn.textContent = isHidden ? 'Hide Comments' : 'Post a Comment';
     });
   }
 
@@ -183,6 +223,8 @@ const NEXORA_INFO = {
   function runWhenReady() {
     initTheme();
     initHeader();
+    initSearch();
+    initCommentsToggle();
     initScrollTop();
     initReadingProgress();
     initImageOptimization();
