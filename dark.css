@@ -1,15 +1,12 @@
 [data-theme="dark"] {
-  --color-bg: #1C1C1C;
-  --color-surface: #262626;
-  --color-surface-hover: #2D2D2D;
-  --color-text: #F5F5F5;
-  --color-text-light: #A1A1A1;
-  --color-primary: #FFFFFF;
-  --color-border: #333333;
-  --color-border-light: #2A2A2A;
-  --color-input-bg: #262626;
+  --bg-color: #1C1C1C;
+  --surface-color: #262626;
+  --text-color: #F5F5F5;
+  --text-light: #A1A1A1;
+  --primary-color: #FFFFFF;
+  --border-color: #333333;
 }
 
 /* Dark mode specific UI tweaks */
-[data-theme="dark"] .card-ui { background: var(--color-surface); border-color: var(--color-border); }
+[data-theme="dark"] .card-ui { background: var(--surface-color); border-color: var(--border-color); }
 [data-theme="dark"] .skeleton { background-color: #2D2D2D; background-image: linear-gradient(90deg, #2D2D2D 0px, #333333 50%, #2D2D2D 100%); }

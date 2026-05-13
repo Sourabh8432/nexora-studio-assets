@@ -21,18 +21,18 @@
 
 .label-ui { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; }
 .btn-ui { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: var(--transition); border-radius: var(--radius-sm); border: 0; }
-.card-ui { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); transition: var(--transition); }
+.card-ui { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--radius-sm); transition: var(--transition); }
 .img-round { border-radius: var(--radius-full); object-fit: cover; flex-shrink: 0; }
 
 body {
   font-family: var(--font-main);
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: var(--bg-color);
+  color: var(--text-color);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-a { color: var(--color-primary); text-decoration: none; transition: var(--transition); }
+a { color: var(--primary-color); text-decoration: none; transition: var(--transition); }
 a:hover { opacity: 0.7; }
 img { max-width: 100%; height: auto; }
 .container {
@@ -42,6 +42,6 @@ img { max-width: 100%; height: auto; }
   width: 100%;
   box-sizing: border-box;
 }
-.skip-link { position: absolute; top: -100px; left: 0; background: var(--color-primary); color: var(--color-surface); padding: 8px 16px; z-index: 10000; transition: top 0.3s; }
+.skip-link { position: absolute; top: -100px; left: 0; background: var(--primary-color); color: var(--surface-color); padding: 8px 16px; z-index: 10000; transition: top 0.3s; }
 .skip-link:focus { top: 0; }
-:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
