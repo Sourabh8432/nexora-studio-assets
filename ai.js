@@ -55,11 +55,22 @@
     });
   }
 
+  function calculateReadingTime(text) {
+    const wordsPerMinute = 200;
+    const words = text.trim().split(/\s+/).length;
+    const time = Math.ceil(words / wordsPerMinute);
+    const rtEl = document.getElementById('readingTime');
+    if (rtEl) rtEl.textContent = `${time} MIN READ`;
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
     const assistant = document.getElementById('aiAssistant');
+    const body = document.querySelector('.single-body');
+    if (body) {
+      calculateReadingTime(body.innerText);
+    }
     if (!assistant) return;
     const key = getGeminiApiKey();
-    const body = document.querySelector('.single-body');
     if (body) {
       assistant.classList.add('is-thinking');
       fetchGeminiAI(key, document.title, body.innerText.slice(0, 4000), assistant);
