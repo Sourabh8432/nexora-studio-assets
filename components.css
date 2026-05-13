@@ -611,6 +611,90 @@ pre:hover .copy-code-btn { opacity: 1; }
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 30px;
 }
+.media-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.media-thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--color-surface-hover);
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+}
+.media-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s var(--ease-out);
+}
+.media-thumb:hover img {
+  transform: scale(1.05);
+}
+.play-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.play-icon svg {
+  width: 46px;
+  height: 46px;
+  padding: 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #000;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  fill: currentColor;
+}
+.media-info {
+  min-width: 0;
+}
+.media-date {
+  display: inline-block;
+  color: var(--text-light);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.media-title {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: 0;
+  text-transform: none;
+  margin: 0;
+}
+.media-title a {
+  color: var(--text-color);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.podcast-feed-grid .media-card {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+.podcast-feed-grid .media-thumb {
+  width: 112px;
+  aspect-ratio: 1 / 1;
+  margin-bottom: 0;
+}
+.podcast-feed-grid .media-title {
+  font-size: 15px;
+  line-height: 1.45;
+}
 .video-card,
 .story-card {
   min-width: 0;
@@ -793,6 +877,7 @@ pre:hover .copy-code-btn { opacity: 1; }
   .podcast-feed-grid,
   .story-feed-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
   .podcast-card { border-left: 0; padding: 0; }
+  .podcast-feed-grid .media-card { grid-template-columns: 112px minmax(0, 1fr); }
 }
 @media (max-width: 560px) {
   .home-media-showcase { margin-top: 26px; }
@@ -804,6 +889,8 @@ pre:hover .copy-code-btn { opacity: 1; }
   .story-feed-grid { grid-template-columns: 1fr; gap: 24px; }
   .podcast-card { grid-template-columns: 96px minmax(0, 1fr); gap: 14px; }
   .podcast-thumb-wrap { width: 96px; }
+  .podcast-feed-grid .media-card { grid-template-columns: 96px minmax(0, 1fr); gap: 14px; }
+  .podcast-feed-grid .media-thumb { width: 96px; }
   .video-title { min-height: 0; }
   .story-title { min-height: 0; font-size: 18px; }
 }
@@ -854,6 +941,55 @@ pre:hover .copy-code-btn { opacity: 1; }
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 28px;
+}
+.latest-card {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+.latest-thumb {
+  display: block;
+  aspect-ratio: 16 / 11;
+  overflow: hidden;
+  background: var(--color-surface-hover);
+  border-radius: var(--radius-sm);
+}
+.latest-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s var(--ease-out);
+}
+.latest-thumb:hover img {
+  transform: scale(1.05);
+}
+.latest-content {
+  min-width: 0;
+}
+.latest-date {
+  display: inline-block;
+  color: var(--text-light);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.latest-title {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  line-height: 1.35;
+  letter-spacing: 0;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+.latest-title a { color: var(--text-color); }
+.latest-snippet {
+  color: var(--text-light);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
 }
 .latest-home-card {
   min-width: 0;
@@ -944,6 +1080,7 @@ pre:hover .copy-code-btn { opacity: 1; }
 }
 @media (max-width: 560px) {
   .latest-home-grid { grid-template-columns: 1fr; gap: 24px; }
+  .latest-title { font-size: 19px; }
   .latest-home-title-link { font-size: 19px; }
   .latest-home-pagination { gap: 8px; }
   .latest-home-page,
