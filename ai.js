@@ -69,10 +69,15 @@
   }
 
   function updateAssistantUI(data) {
+    const assistant = document.getElementById('aiAssistant');
     const summaryEl = document.getElementById('aiSummary');
+    const summaryWrapper = document.getElementById('aiSummaryWrapper');
     const quickTakeEl = document.getElementById('aiQuickTake');
+    const quickTakeWrapper = document.getElementById('aiQuickTakeWrapper');
     const kpEl = document.getElementById('aiKeyPoints');
+    const highlightsWrapper = document.getElementById('aiHighlightsWrapper');
     const nextStepsEl = document.getElementById('aiNextSteps');
+    const nextStepsWrapper = document.getElementById('aiNextStepsWrapper');
     const difficultyEl = document.getElementById('aiDifficulty');
     const toneEl = document.getElementById('aiTone');
     const readTimeEl = document.getElementById('aiReadTime');
@@ -81,22 +86,47 @@
     const sourcesWrapper = document.getElementById('aiSourcesWrapper');
     const sourcesEl = document.getElementById('aiSources');
 
-    console.log('Nexora AI: Updating UI with data...', data);
+    if (!assistant) return;
+    console.log('Nexora AI: Evaluating insights quality...', data);
 
-    if (summaryEl) summaryEl.textContent = data.summary || 'Post summary analysis complete.';
-    
-    if (quickTakeEl) {
-      quickTakeEl.textContent = data.quickTake || (data.summary ? `Key Takeaway: ${data.summary.split('.')[0]}.` : 'Deep insight analysis complete.');
+    // Summary Logic
+    if (summaryEl && summaryWrapper) {
+      if (data.summary && data.summary.length > 20) {
+        summaryEl.textContent = data.summary;
+        summaryWrapper.style.display = 'block';
+      } else {
+        summaryWrapper.style.display = 'none';
+      }
     }
 
-    if (kpEl) {
-      const highlights = Array.isArray(data.highlights) && data.highlights.length ? data.highlights : ['Key highlights extracted from content.'];
-      kpEl.innerHTML = highlights.map(p => `<li>${p}</li>`).join('');
+    // Quick Take Logic (Professional Hide)
+    if (quickTakeEl && quickTakeWrapper) {
+      if (data.quickTake && data.quickTake.length > 30) {
+        quickTakeEl.textContent = data.quickTake;
+        quickTakeWrapper.style.display = 'block';
+      } else {
+        quickTakeWrapper.style.display = 'none';
+      }
     }
 
-    if (nextStepsEl) {
-      const steps = Array.isArray(data.nextSteps) && data.nextSteps.length ? data.nextSteps : ['Read the full article for more details.', 'Explore related research links.', 'Share this insight with your network.'];
-      nextStepsEl.innerHTML = steps.map(step => `<li>${step}</li>`).join('');
+    // Highlights Logic (Professional Hide)
+    if (kpEl && highlightsWrapper) {
+      if (Array.isArray(data.highlights) && data.highlights.length >= 2) {
+        kpEl.innerHTML = data.highlights.map(p => `<li>${p}</li>`).join('');
+        highlightsWrapper.style.display = 'block';
+      } else {
+        highlightsWrapper.style.display = 'none';
+      }
+    }
+
+    // Next Steps Logic (Professional Hide)
+    if (nextStepsEl && nextStepsWrapper) {
+      if (Array.isArray(data.nextSteps) && data.nextSteps.length >= 2) {
+        nextStepsEl.innerHTML = data.nextSteps.map(step => `<li>${step}</li>`).join('');
+        nextStepsWrapper.style.display = 'block';
+      } else {
+        nextStepsWrapper.style.display = 'none';
+      }
     }
 
     if (difficultyEl) difficultyEl.textContent = data.difficulty || 'Standard';
@@ -111,6 +141,14 @@
     if (sourcesEl && data.sources && data.sources.length) {
       sourcesEl.innerHTML = data.sources.map((source, index) => `<a href="${source.url}" target="_blank" rel="noopener noreferrer">${index + 1}. ${source.title}</a>`).join('');
       if (sourcesWrapper) sourcesWrapper.style.display = 'block';
+    }
+
+    // Advanced Professional Logic: Hide entire card if all blocks are hidden
+    const visibleSections = assistant.querySelectorAll('.ai-assistant-section:not([style*="none"])');
+    if (visibleSections.length === 0) {
+      assistant.style.display = 'none';
+    } else {
+      assistant.style.display = 'block';
     }
   }
 
