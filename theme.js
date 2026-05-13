@@ -18,7 +18,7 @@ function escapeHtml(value) {
 
 const NEXORA_INFO = {
   name: "Nexora Studio AI",
-  version: "1.1.0",
+  version: "1.2.0",
   author: "Nexora Architecture"
 };
 
