@@ -80,25 +80,37 @@
     const keywordsEl = document.getElementById('aiKeywords');
     const sourcesWrapper = document.getElementById('aiSourcesWrapper');
     const sourcesEl = document.getElementById('aiSources');
-    if (summaryEl) summaryEl.textContent = data.summary || '';
-    if (quickTakeEl) quickTakeEl.textContent = data.quickTake || data.summary || '';
-    if (kpEl) kpEl.innerHTML = (data.highlights || []).map(p => `<li>${p}</li>`).join('');
-    if (nextStepsEl) {
-      const nextSteps = Array.isArray(data.nextSteps) && data.nextSteps.length
-        ? data.nextSteps
-        : ['Read the summary first.', 'Review the highlights.', 'Apply one key idea from this post.'];
-      nextStepsEl.innerHTML = nextSteps.map(step => `<li>${step}</li>`).join('');
+
+    console.log('Nexora AI: Updating UI with data...', data);
+
+    if (summaryEl) summaryEl.textContent = data.summary || 'Post summary analysis complete.';
+    
+    if (quickTakeEl) {
+      quickTakeEl.textContent = data.quickTake || (data.summary ? `Key Takeaway: ${data.summary.split('.')[0]}.` : 'Deep insight analysis complete.');
     }
+
+    if (kpEl) {
+      const highlights = Array.isArray(data.highlights) && data.highlights.length ? data.highlights : ['Key highlights extracted from content.'];
+      kpEl.innerHTML = highlights.map(p => `<li>${p}</li>`).join('');
+    }
+
+    if (nextStepsEl) {
+      const steps = Array.isArray(data.nextSteps) && data.nextSteps.length ? data.nextSteps : ['Read the full article for more details.', 'Explore related research links.', 'Share this insight with your network.'];
+      nextStepsEl.innerHTML = steps.map(step => `<li>${step}</li>`).join('');
+    }
+
     if (difficultyEl) difficultyEl.textContent = data.difficulty || 'Standard';
     if (toneEl) toneEl.textContent = data.tone || 'Informative';
     if (readTimeEl && data.readTime) readTimeEl.textContent = data.readTime;
+
     if (keywordsEl && data.keywords && data.keywords.length) {
       keywordsEl.innerHTML = data.keywords.map(tag => `<span class="ai-tag">${tag}</span>`).join('');
-      if (keywordsWrapper) keywordsWrapper.style.display = '';
+      if (keywordsWrapper) keywordsWrapper.style.display = 'block';
     }
+
     if (sourcesEl && data.sources && data.sources.length) {
       sourcesEl.innerHTML = data.sources.map((source, index) => `<a href="${source.url}" target="_blank" rel="noopener noreferrer">${index + 1}. ${source.title}</a>`).join('');
-      if (sourcesWrapper) sourcesWrapper.style.display = '';
+      if (sourcesWrapper) sourcesWrapper.style.display = 'block';
     }
   }
 
