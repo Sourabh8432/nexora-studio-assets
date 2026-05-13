@@ -1,0 +1,33 @@
+@media (max-width: 1450px) {
+  .container { padding: 0 40px; }
+}
+
+@media (max-width: 900px) {
+  .container { padding: 0 20px; }
+  .main-wrapper { grid-template-columns: 1fr; }
+  .site-header-wrapper { padding-top: 20px; margin-bottom: 22px; }
+  .header-nav { display: none; }
+  .mobile-menu-toggle { display: flex; }
+  .header-logo { margin-right: 0; }
+  
+  .nexora-hero-slide { grid-template-columns: 1fr; gap: 28px; }
+  .nexora-hero-content { order: 2; }
+  .nexora-hero-image-wrap { order: 1; aspect-ratio: 4/3; }
+}
+
+@media (max-width: 768px) {
+  .post-loop { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .video-feed-grid, .story-feed-grid { grid-template-columns: 1fr; }
+  .video-title, .story-title { font-size: 18px; min-height: 0; }
+  .single-newsletter { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+  .nexora-hero-slide { gap: 26px; }
+  .nexora-hero-title { font-size: 36px; }
+  .topic-cards-section .widget { flex: 0 0 160px; }
+  .trending-strip { display: flex; flex-direction: column; align-items: flex-start; }
+}

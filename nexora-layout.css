@@ -1,0 +1,289 @@
+  body#layout {
+    --layout-blue: #2f5d8a;
+    --layout-blue-dark: #244a70;
+    --layout-line: #d8e3ef;
+    --layout-soft: #f6f9fc;
+    --layout-text: #1c2f45;
+    background: #f4f7fb !important;
+    color: var(--layout-text) !important;
+    font-family: Arial, "Segoe UI", sans-serif !important;
+    padding: 16px 18px 28px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+  body#layout * { box-sizing: border-box !important; }
+  body#layout::before {
+    content: "2 COLUMN LAYOUT" !important;
+    display: block !important;
+    max-width: 1240px !important;
+    margin: 0 auto 18px !important;
+    padding: 12px 16px !important;
+    border-radius: 4px 4px 0 0 !important;
+    background: linear-gradient(180deg, #3f73a5 0%, var(--layout-blue-dark) 100%) !important;
+    color: #fff !important;
+    text-align: center !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 1px 3px rgba(15, 35, 55, 0.18) !important;
+  }
+  body#layout .container,
+  body#layout main,
+  body#layout .site-footer {
+    max-width: 1240px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+  body#layout > .container,
+  body#layout > main,
+  body#layout > .site-footer {
+    order: 10 !important;
+  }
+  body#layout > .container:has(.site-header-wrapper) {
+    order: 1 !important;
+  }
+  body#layout > .nexora-ai-settings {
+    order: 2 !important;
+  }
+  body#layout > main {
+    order: 3 !important;
+  }
+  body#layout > .site-footer {
+    order: 4 !important;
+  }
+  body#layout .container + .container,
+  body#layout main > .container,
+  body#layout .site-footer .container {
+    margin-top: 14px !important;
+  }
+  body#layout .nexora-ai-settings {
+    display: block !important;
+  }
+  body#layout .site-header-wrapper,
+  body#layout .layout-hero-section,
+  body#layout .below-hero-hub,
+  body#layout .home-media-showcase,
+  body#layout .main-wrapper,
+  body#layout .site-footer > .container {
+    background: transparent !important;
+    padding: 0 !important;
+    margin-bottom: 14px !important;
+  }
+  body#layout .site-header-wrapper {
+    display: block !important;
+    border: 1px solid var(--layout-line) !important;
+    border-radius: 5px !important;
+    background: #fff !important;
+    padding: 36px 16px 16px !important;
+    position: relative !important;
+  }
+  body#layout .site-header-wrapper::before {
+    content: "HEADER - 3 COLUMN" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-bottom: 1px solid var(--layout-line) !important;
+    background: linear-gradient(180deg, #fbfdff 0%, #f0f6fc 100%) !important;
+    color: #335a7e !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+  }
+  body#layout .topic-strip-wrap {
+    display: contents !important;
+  }
+  body#layout .site-header,
+  body#layout .topic-cards-section,
+  body#layout .main-wrapper,
+  body#layout .footer-newsletter,
+  body#layout .footer-main,
+  body#layout .footer-bottom {
+    display: grid !important;
+    gap: 16px !important;
+    align-items: stretch !important;
+  }
+  body#layout .site-header {
+    grid-template-columns: 1fr 1fr 1fr !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  body#layout .header-left,
+  body#layout .header-right {
+    display: contents !important;
+  }
+  body#layout .topic-cards-section {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  }
+  body#layout .main-wrapper {
+    grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.9fr) !important;
+  }
+  body#layout .content-area {
+    display: grid !important;
+    gap: 14px !important;
+  }
+  body#layout .footer-newsletter {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  body#layout .footer-main {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  body#layout .footer-bottom {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  body#layout .section {
+    position: relative !important;
+    min-height: 88px !important;
+    margin: 0 !important;
+    padding: 36px 18px 16px !important;
+    border: 1px solid var(--layout-line) !important;
+    border-radius: 5px !important;
+    background: #fff !important;
+    box-shadow: 0 1px 3px rgba(17, 37, 58, 0.06) !important;
+  }
+  body#layout .site-header .section {
+    min-height: 110px !important;
+  }
+  body#layout .section::before {
+    content: attr(id) !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-bottom: 1px solid var(--layout-line) !important;
+    border-radius: 5px 5px 0 0 !important;
+    background: linear-gradient(180deg, #fbfdff 0%, #f0f6fc 100%) !important;
+    color: #335a7e !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.3px !important;
+    text-transform: uppercase !important;
+  }
+  body#layout #nexora-ai-settings::before { content: "ADVANCED SETTINGS - GEMINI API KEY" !important; }
+  body#layout #header-logo::before { content: "HEADER LOGO" !important; }
+  body#layout #header-nav::before { content: "HEADER NAV" !important; }
+  body#layout #header-contact::before { content: "HEADER CONTACT" !important; }
+  body#layout #featured-hero::before { content: "FEATURED HERO" !important; }
+  body#layout #topic-cards::before { content: "TOPIC CARDS" !important; }
+  body#layout #below-hero-trending::before { content: "BELOW HERO TRENDING" !important; }
+  body#layout #home-video-picks::before { content: "VIDEO PICKS" !important; }
+  body#layout #home-podcasts::before { content: "PODCASTS" !important; }
+  body#layout #home-news-briefs::before { content: "NEWS BRIEFS" !important; }
+  body#layout #home-blogger-picks::before { content: "BLOGGER PICKS" !important; }
+  body#layout #latest-posts-home::before { content: "LATEST POSTS HOME" !important; }
+  body#layout #single-top::before { content: "SINGLE POST TOP" !important; }
+  body#layout #ad-hero::before { content: "HERO AD SLOT" !important; }
+  body#layout #ad-main::before { content: "CONTENT AD SLOT" !important; }
+  body#layout #main::before { content: "BLOG POSTS" !important; }
+  body#layout #single-bottom::before { content: "SINGLE POST BOTTOM" !important; }
+  body#layout #ad-sidebar::before { content: "SIDEBAR AD SLOT" !important; }
+  body#layout #sidebar::before { content: "SIDEBAR" !important; }
+  body#layout #ad-footer-top::before { content: "FOOTER TOP AD" !important; }
+  body#layout #footer-news-title::before { content: "NEWSLETTER TITLE" !important; }
+  body#layout #footer-news-desc::before { content: "NEWSLETTER DESCRIPTION" !important; }
+  body#layout #footer-news-form::before { content: "NEWSLETTER FORM" !important; }
+  body#layout #footer-brand-copy::before { content: "BRAND COPY" !important; }
+  body#layout #footer-social::before { content: "SOCIAL LINKS" !important; }
+  body#layout #footer-company::before { content: "COMPANY LINKS" !important; }
+  body#layout #footer-categories::before { content: "CATEGORY LINKS" !important; }
+  body#layout #footer-legal::before { content: "LEGAL LINKS" !important; }
+  body#layout #footer-contact::before { content: "CONTACT INFO" !important; }
+  body#layout #footer-copyright::before { content: "COPYRIGHT TEXT" !important; }
+  body#layout #footer-bottom-links::before { content: "FOOTER BOTTOM LINKS" !important; }
+  body#layout [id*="ad-"] {
+    border-style: dashed !important;
+    background: #f8fcf8 !important;
+  }
+  body#layout [id*="ad-"]::before {
+    color: #26753d !important;
+  }
+  body#layout .widget {
+    min-height: 58px !important;
+    margin: 0 0 10px !important;
+    padding: 14px 16px !important;
+    border: 1px solid #dfe7f0 !important;
+    border-radius: 3px !important;
+    background: #fff !important;
+    box-shadow: 0 1px 2px rgba(18, 40, 65, 0.04) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+  body#layout .widget:last-child {
+    margin-bottom: 0 !important;
+  }
+  body#layout .widget:hover {
+    border-color: #a9bfd5 !important;
+    box-shadow: 0 2px 8px rgba(18, 40, 65, 0.08) !important;
+  }
+  body#layout .widget h4 {
+    margin: 0 !important;
+    color: #10283f !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    line-height: 1.25 !important;
+  }
+  body#layout .widget .widget-content,
+  body#layout .widget .layout-widget-description {
+    color: #566b80 !important;
+    font-size: 11px !important;
+    line-height: 1.35 !important;
+  }
+  body#layout .add_widget,
+  body#layout a.add_widget {
+    display: flex !important;
+    min-height: 42px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px dashed #8fb4d8 !important;
+    border-radius: 3px !important;
+    background: #fbfdff !important;
+    color: #2f6da3 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+  }
+  body#layout .header-line-container,
+  body#layout .full-width-search,
+  body#layout .mobile-menu-toggle,
+  body#layout .theme-toggle,
+  body#layout .header-search,
+  body#layout .header-divider,
+  body#layout .skip-link,
+  body#layout .footer-news-icon,
+  body#layout svg,
+  body#layout img {
+    display: none !important;
+  }
+  body#layout .ad-zone,
+  body#layout .ad-main,
+  body#layout .sidebar-ad,
+  body#layout .ad-footer {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  body#layout .ad-zone .section,
+  body#layout .sidebar-ad .section,
+  body#layout .ad-footer .section {
+    min-height: 96px !important;
+  }
+  @media (max-width: 900px) {
+    body#layout .site-header,
+    body#layout .topic-cards-section,
+    body#layout .main-wrapper,
+    body#layout .footer-newsletter,
+    body#layout .footer-main,
+    body#layout .footer-bottom {
+      grid-template-columns: 1fr !important;
+    }
+  }

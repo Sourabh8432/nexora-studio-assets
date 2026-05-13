@@ -1,0 +1,47 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+/* Utility Classes - Powering the Design System */
+.u-flex { display: flex; align-items: center; }
+.u-flex-center { display: flex; align-items: center; justify-content: center; }
+.u-grid { display: grid; }
+.u-transition { transition: var(--transition); }
+.u-upper { text-transform: uppercase; }
+.u-bold { font-weight: 800; }
+.u-semi { font-weight: 600; }
+.u-small { font-size: 12px; }
+.u-xs { font-size: 12px; }
+.u-ls { letter-spacing: 0.6px; }
+.u-ls-wide { letter-spacing: 1px; }
+.u-line-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.u-line-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.u-mb-1 { margin-bottom: var(--space-xs); }
+.u-mb-2 { margin-bottom: var(--space-sm); }
+.u-mb-3 { margin-bottom: var(--space-md); }
+.u-mb-4 { margin-bottom: var(--space-lg); }
+.u-block-space { margin-block: var(--space-lg); }
+
+.label-ui { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; }
+.btn-ui { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: var(--transition); border-radius: var(--radius-sm); border: 0; }
+.card-ui { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); transition: var(--transition); }
+.img-round { border-radius: var(--radius-full); object-fit: cover; flex-shrink: 0; }
+
+body {
+  font-family: var(--font-main);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+a { color: var(--color-primary); text-decoration: none; transition: var(--transition); }
+a:hover { opacity: 0.7; }
+img { max-width: 100%; height: auto; }
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 40px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.skip-link { position: absolute; top: -100px; left: 0; background: var(--color-primary); color: var(--color-surface); padding: 8px 16px; z-index: 10000; transition: top 0.3s; }
+.skip-link:focus { top: 0; }
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
