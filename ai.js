@@ -63,7 +63,7 @@
     if (rtEl) rtEl.textContent = `${time} MIN READ`;
   }
 
-  document.addEventListener("DOMContentLoaded", function() {
+  function runWhenReady() {
     const assistant = document.getElementById('aiAssistant');
     const body = document.querySelector('.single-body');
     if (body) {
@@ -75,5 +75,8 @@
       assistant.classList.add('is-thinking');
       fetchGeminiAI(key, document.title, body.innerText.slice(0, 4000), assistant);
     }
-  });
+  }
+
+  if (document.readyState === "complete" || document.readyState === "interactive") runWhenReady();
+  else document.addEventListener("DOMContentLoaded", runWhenReady);
 })();

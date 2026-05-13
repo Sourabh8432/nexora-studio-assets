@@ -49,8 +49,11 @@
     });
   }
 
-  document.addEventListener("DOMContentLoaded", function() {
+  function runWhenReady() {
     initHero();
     initTrending();
-  });
+  }
+
+  if (document.readyState === "complete" || document.readyState === "interactive") runWhenReady();
+  else document.addEventListener("DOMContentLoaded", runWhenReady);
 })();

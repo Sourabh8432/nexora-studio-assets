@@ -26,5 +26,10 @@
     });
   }
 
-  document.addEventListener("DOMContentLoaded", initSearch);
+  function runWhenReady() {
+    initSearch();
+  }
+
+  if (document.readyState === "complete" || document.readyState === "interactive") runWhenReady();
+  else document.addEventListener("DOMContentLoaded", runWhenReady);
 })();

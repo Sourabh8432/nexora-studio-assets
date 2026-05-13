@@ -40,19 +40,6 @@ const NEXORA_INFO = {
   }
 
   // Mobile Menu
-  function initHeader() {
-    var mobileBtn = document.getElementById('mobileMenuTrigger');
-    var nav = document.getElementById('mobileNav');
-    if (mobileBtn && nav) {
-      mobileBtn.addEventListener('click', function() {
-        var isActive = !nav.classList.contains('mobile-active');
-        nav.classList.toggle('mobile-active', isActive);
-        mobileBtn.setAttribute('aria-expanded', isActive);
-      });
-    }
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && nav) {
-        nav.classList.remove('mobile-active');
         if (mobileBtn) mobileBtn.setAttribute('aria-expanded', 'false');
       }
     });
@@ -98,13 +85,16 @@ const NEXORA_INFO = {
   }
 
   // Initialize
-  document.addEventListener("DOMContentLoaded", function() {
+  function runWhenReady() {
     initTheme();
     initHeader();
     initScrollTop();
     initReadingProgress();
     initImageOptimization();
-  });
+  }
+
+  if (document.readyState === "complete" || document.readyState === "interactive") runWhenReady();
+  else document.addEventListener("DOMContentLoaded", runWhenReady);
 })();
 
 
@@ -241,9 +231,12 @@ const NEXORA_INFO = {
     }
   }
 
-  document.addEventListener("DOMContentLoaded", function() {
+  function runWhenReady() {
     initMediaFeeds();
     initLatestHome();
     initRelatedPosts();
-  });
+  }
+
+  if (document.readyState === "complete" || document.readyState === "interactive") runWhenReady();
+  else document.addEventListener("DOMContentLoaded", runWhenReady);
 })();
