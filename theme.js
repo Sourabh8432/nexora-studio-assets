@@ -22,6 +22,18 @@ function optimizeImageUrl(url) {
     var parsed = new URL(url, window.location.origin);
     var host = parsed.hostname.toLowerCase();
 
+    // Blogger / Google Images
+    if (host.indexOf('blogger.googleusercontent.com') !== -1 || host.indexOf('bp.blogspot.com') !== -1 || host.indexOf('googleusercontent.com') !== -1) {
+      // Logic to optimize Blogger images by changing sizing segments (e.g., /s320/ to /s1600/)
+      let newUrl = url.replace(/\/s\d+(-[cpd])*\//, '/s1600/');
+      if (newUrl === url) newUrl = url.replace(/\/w\d+-h\d+(-[cpd])*\//, '/w1600/');
+      // If no sizing found, try to append it if it's a standard Blogger URL structure
+      if (newUrl === url && /\/img\/b\/[^\/]+\/s[^\/]+\//.test(url)) {
+          newUrl = url.replace(/\/s[^\/]+\//, '/s1600/');
+      }
+      return newUrl;
+    }
+
     if (host.indexOf('images.unsplash.com') !== -1 || host.indexOf('source.unsplash.com') !== -1) {
       parsed.searchParams.set('auto', 'format');
       parsed.searchParams.set('fm', 'webp');
@@ -166,22 +178,27 @@ const NEXORA_INFO = {
     const images = document.querySelectorAll('.post-body img, .single-body img, .media-thumb img, .latest-thumb img, .sidebar-latest-thumb, .nexora-hero-image, .single-hero, .topic-icon img');
     images.forEach((img, index) => {
       if (!img.getAttribute('alt')) img.setAttribute('alt', document.title + ' Image ' + (index + 1));
+      
+      const isHero = img.classList.contains('single-hero') || img.classList.contains('nexora-hero-image');
+
       if (!img.dataset.nexoraOptimized) {
         var src = img.getAttribute('src');
-        var srcset = img.getAttribute('srcset');
-        if (src) img.setAttribute('src', optimizeImageUrl(src));
-        if (srcset) img.setAttribute('srcset', optimizeSrcset(srcset));
+        if (src) {
+           // For Hero images, we want high quality (1600px), for others 800px is enough
+           const targetWidth = isHero ? 1600 : 800;
+           img.setAttribute('src', optimizeImageUrl(src).replace('/s1600/', `/s${targetWidth}/`));
+        }
         img.dataset.nexoraOptimized = 'true';
       }
-      if (index === 0 || img.classList.contains('single-hero') || img.classList.contains('nexora-hero-image')) {
+
+      if (isHero || index === 0) {
         img.setAttribute('fetchpriority', 'high');
+        img.setAttribute('loading', 'eager'); // Hero must load fast
       } else {
         img.setAttribute('loading', 'lazy');
         img.setAttribute('fetchpriority', 'low');
       }
       img.setAttribute('decoding', 'async');
-      if (!img.getAttribute('width') && img.closest('.single-body, .post-body, .media-thumb, .latest-thumb')) img.setAttribute('width', '1200');
-      if (!img.getAttribute('height') && img.closest('.single-body, .post-body, .media-thumb, .latest-thumb')) img.setAttribute('height', '630');
     });
   }
 

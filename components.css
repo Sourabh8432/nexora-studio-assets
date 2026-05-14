@@ -134,7 +134,7 @@ pre:hover .copy-code-btn { opacity: 1; }
 }
 
 
-.site-header-wrapper { position: relative; padding-top: 30px; margin-bottom: 26px; }
+.site-header-wrapper { position: relative; padding-top: 30px; margin-bottom: 26px; z-index: 10002; }
 .site-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 26px; }
 .site-header .widget { margin: 0; }
 .header-left, .header-right { display: flex; align-items: center; }
@@ -189,20 +189,28 @@ pre:hover .copy-code-btn { opacity: 1; }
 .header-line-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: var(--border-color); }
 
 .full-width-search {
-  display: none;
-  position: fixed;
-  top: 0;
+  display: flex;
+  position: absolute;
+  top: 100%;
   left: 0;
   width: 100%;
   height: 90px;
   background: var(--surface-color);
-  z-index: 10001;
+  z-index: 10003;
   align-items: center;
   padding: 0 40px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   border-bottom: 1px solid var(--border-color);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
-.full-width-search.active { display: flex; }
+.full-width-search.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
 .full-width-search input {
   width: 100%;
   border: 0;
@@ -1717,6 +1725,18 @@ border-color: var(--text-color);
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
 }
+/* Ensure no double borders in sidebar */
+.sidebar-area .widget .sidebar-widget,
+.sidebar-area .widget .contact-form-widget,
+.sidebar-area .widget .c-form,
+.sidebar-area .widget > .widget-content,
+.sidebar-area .widget .FollowByEmail,
+.sidebar-area .widget .PopularPosts {
+  border: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
 .contact-form-name, .contact-form-email, .contact-form-email-message,
 .c-form__input, .c-form__textarea {
   width: 100% !important; background: var(--bg-color) !important; border: 1px solid var(--border-color) !important; color: var(--text-color) !important;
@@ -2563,7 +2583,6 @@ body:not(.is-homepage) .latest-home-block {
 }
 
 /* SEARCH & MOBILE FIXES */
-.full-width-search.active { display: flex !important; }
 .mobile-nav.mobile-active { display: block !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--surface-color); z-index: 10000; padding: 80px 40px; }
 
 /* SIDEBAR LATEST NEWS WIDGET */
