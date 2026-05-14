@@ -94,7 +94,7 @@
     if (grid && entries.length > 0) {
       grid.innerHTML = entries.map(e => renderLatestCard(getPostData(e))).join('');
     } else if (grid) {
-      grid.innerHTML = '<div class="empty-state"><h2>No posts found</h2><p>Publish posts in Blogger or set this widget to ALL|6.</p></div>';
+      grid.innerHTML = '<div class="empty-state"><h2>No content found</h2><p>Please check back later or start publishing posts to see them here.</p></div>';
     }
   }
 
