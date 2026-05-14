@@ -299,10 +299,11 @@ const NEXORA_INFO = {
     if (!post) return '';
     const isPodcast = type === 'podcast';
     return `
-      <div class="media-card ${isPodcast ? 'podcast-item' : ''}">
-        <a href="${post.url}" class="media-thumb">
+      <div class="media-card ${type}-card">
+        <a href="${post.url}" class="media-thumb ${type}-thumb-wrap">
           <img src="${post.thumb}" alt="${post.title}" loading="lazy"/>
-          ${!isPodcast ? '<span class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>' : ''}
+          ${type === 'video' ? '<span class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>' : ''}
+          ${type === 'podcast' ? '<span class="podcast-play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>' : ''}
         </a>
         <div class="media-info">
           <span class="media-date">${post.date}</span>
@@ -356,16 +357,14 @@ const NEXORA_INFO = {
       const type = section.getAttribute('data-media-feed');
       const grid = $('[data-media-grid]', section);
       
-      let entries = await fetchBloggerFeed(label, limit);
-      if (entries.length === 0 && label !== 'ALL') {
-        console.warn(`Nexora: Label "${label}" empty. Trying ALL posts fallback.`);
-        entries = await fetchBloggerFeed('ALL', limit);
-      }
+      if (!grid) continue;
 
-      if (grid && entries.length > 0) {
+      let entries = await fetchBloggerFeed(label, limit);
+
+      if (entries.length > 0) {
         grid.innerHTML = entries.map(e => renderMediaCard(getPostData(e), type)).join('');
       } else {
-        console.warn(`Nexora: Grid missing or no entries for ${label}`);
+        grid.innerHTML = `<div class="media-empty">No posts found with label: <b>${label}</b>. Publish posts in Blogger with this label to show them here.</div>`;
       }
     }
   }

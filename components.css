@@ -690,14 +690,12 @@ width: 28px;
   margin-bottom: 8px;
 }
 .media-title {
- display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 11px;
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 15px;
   font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  white-space: nowrap;
+  line-height: 1.4;
+  margin-top: 4px;
 }
 .media-title a {
   color: var(--text-color);
@@ -706,20 +704,23 @@ width: 28px;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.podcast-feed-grid .media-card {
-  display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
-  gap: 18px;
+.podcast-card {
+  display: grid !important;
+  grid-template-columns: 100px minmax(0, 1fr) !important;
+  gap: 20px !important;
   align-items: center;
 }
-.podcast-feed-grid .media-thumb {
-  width: 112px;
-  aspect-ratio: 1 / 1;
-  margin-bottom: 0;
+.podcast-thumb-wrap {
+  width: 100px !important;
+  aspect-ratio: 1/1 !important;
+  margin-bottom: 0 !important;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  position: relative;
 }
-.podcast-feed-grid .media-title {
-  font-size: 15px;
-  line-height: 1.45;
+.podcast-card .media-title {
+  font-size: 16px;
+  margin-top: 0;
 }
 .video-card,
 .story-card {
@@ -751,28 +752,30 @@ width: 28px;
 .podcast-thumb-wrap:hover .podcast-thumb { opacity: 1; transform: scale(1.05); }
 
 /* Play Button Overlays */
-.video-overlay {
+.play-icon, .podcast-play-icon {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  z-index: 2;
 }
-.video-play-icon {
+.play-icon svg, .podcast-play-icon svg {
   width: 44px;
   height: 44px;
-  background: rgba(255,255,255,0.95);
+  padding: 12px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
   color: #000;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  fill: currentColor;
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-.video-play-icon svg { width: 16px; height: 16px; margin-left: 2px; }
-.video-thumb-wrap:hover .video-play-icon { transform: scale(1.15); }
+.media-thumb:hover .play-icon svg, 
+.media-thumb:hover .podcast-play-icon svg { 
+  transform: scale(1.1); 
+}
 
 .video-duration-badge {
   position: absolute;
