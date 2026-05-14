@@ -308,7 +308,7 @@ pre:hover .copy-code-btn { opacity: 1; }
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.7px;
+  letter-spacing: 0.8px;
 }
 .nexora-hero-image-wrap {
   position: relative;
@@ -501,7 +501,7 @@ min-width: 0;
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 1px;
   white-space: nowrap;
 }
 .trending-title::after {
@@ -595,11 +595,11 @@ min-width: 0;
 .media-title {
   display: inline-flex;
   align-items: center;
-  gap: 18px;
-  font-size: 11px;
+  gap: 12px;
+  font-size: 24px;
   font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: var(--text-color);
+  letter-spacing: -0.5px;
   line-height: 1.2;
 }
 .media-title::after {
@@ -2643,9 +2643,4 @@ body:not(.is-homepage) .latest-home-block {
 }
 .comment-toggle-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
 .single-comments { margin-top: 20px; }
-
-
-/* Empty State Styling */
-.empty-state { text-align: center; padding: 60px 20px; background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; margin: 20px 0; }
-.empty-state h2 { font-size: 24px; font-weight: 700; color: #111; margin-bottom: 10px; }
-.empty-state p { color: #666; font-size: 14px; }
+/* Typography Cleanup Complete */
