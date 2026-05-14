@@ -2185,7 +2185,7 @@ border-bottom: 2px solid var(--primary-color);
 .widget { margin-bottom: var(--space-xl); }
 .widget-title {
   font-family: var(--font-heading);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1px;
