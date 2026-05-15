@@ -215,6 +215,25 @@ const NEXORA_INFO = {
     });
   }
 
+  function initFAQ() {
+    const containers = $$('.nx-faq-container');
+    containers.forEach(container => {
+      container.addEventListener('click', e => {
+        const question = e.target.closest('.nx-faq-question');
+        if (!question) return;
+        const item = question.parentElement;
+        const wasOpen = item.classList.contains('is-open');
+        
+        // Close all other items in this container (optional, but premium feel)
+        container.querySelectorAll('.nx-faq-item').forEach(i => i.classList.remove('is-open'));
+        
+        if (!wasOpen) {
+          item.classList.add('is-open');
+        }
+      });
+    });
+  }
+
   // Initialize
   function runWhenReady() {
     console.log('Nexora: Initializing Theme Components...');
@@ -225,6 +244,7 @@ const NEXORA_INFO = {
     try { initReadingProgress(); } catch(e) { console.error('ReadingProgress Error:', e); }
     try { initImageOptimization(); } catch(e) { console.error('ImageOpt Error:', e); }
     try { initDeferredEmbeds(); } catch(e) { console.error('Embeds Error:', e); }
+    try { initFAQ(); } catch(e) { console.error('FAQ Error:', e); }
   }
 
   if (document.readyState === "complete" || document.readyState === "interactive") runWhenReady();
