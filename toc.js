@@ -12,6 +12,16 @@
     const headings = body.querySelectorAll('h2, h3, h4');
     if (headings.length < 2) return;
 
+    const getIconForText = (text) => {
+      const lower = text.toLowerCase();
+      if (lower.includes('impact') || lower.includes('ai') || lower.includes('automation')) return '🤖';
+      if (lower.includes('industry') || lower.includes('role') || lower.includes('job')) return '🏢';
+      if (lower.includes('question') || lower.includes('faq')) return '❓';
+      if (lower.includes('final') || lower.includes('verdict') || lower.includes('conclusion')) return '🎯';
+      if (lower.includes('inside') || lower.includes('introduction') || lower.includes('article')) return '🏠';
+      return '📄'; // Default
+    };
+
     let html = '';
     headings.forEach((heading, index) => {
       const text = heading.textContent.trim().replace(/[→\u2192]/g, '');
@@ -19,8 +29,18 @@
       const id = heading.id || 'section-' + (index + 1);
       heading.id = id;
       const tag = heading.tagName.toLowerCase();
+      const num = (index + 1).toString().padStart(2, '0');
+      const icon = getIconForText(text);
+
       let cls = tag === 'h3' ? 'is-sub' : (tag === 'h4' ? 'is-sub2' : '');
-      html += `<li><a href="#${id}" class="${cls}" data-toc-link="${id}">${text}</a></li>`;
+      
+      html += `
+        <li class="${cls}">
+          <div class="toc-sidebar-num">${num}</div>
+          <div class="toc-item-icon">${icon}</div>
+          <a href="#${id}" data-toc-link="${id}">${text}</a>
+          <svg class="toc-chevron" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+        </li>`;
     });
 
     list.innerHTML = html;
