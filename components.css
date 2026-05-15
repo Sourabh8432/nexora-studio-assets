@@ -3102,7 +3102,6 @@ body:not(.is-homepage) .latest-home-block {
 [data-theme='dark'] .post-share, 
 [data-theme='dark'] .single-extras, 
 [data-theme='dark'] .author-box-wrap { 
-  background: #1A1A1A !important; 
   border-color: #222 !important; 
   color: #fff !important; 
 }
@@ -3122,4 +3121,37 @@ body:not(.is-homepage) .latest-home-block {
 /* Hide the extra comment source link that shows as a box */
 [data-theme='dark'] #comment-editor-src {
   display: none !important;
+}
+
+/* Home Page Post Card Enhancements */
+.post-title {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  line-height: 1.3 !important;
+  margin: 12px 0 !important;
+  color: var(--text-color);
+}
+
+.post-snippet {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  color: var(--text-light) !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  opacity: 0.8;
+}
+
+/* Fix TOC text appearing in snippets */
+.post-card-snippet:first-line {
+  text-transform: capitalize;
+}
+
+.post-meta {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.6;
 }
