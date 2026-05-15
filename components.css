@@ -1714,11 +1714,25 @@ font-weight: 800;
 
 .single-toc-list li.is-sub a { font-size: 14px; font-weight: 500; opacity: 0.8; }
 
+.is-collapsed .single-toc-main { display: none; }
+
+.single-toc-main {
+  padding: 30px 0;
+  transition: all 0.3s ease;
+}
+
+/* ... existing styles ... */
+
 @media (max-width: 768px) {
-  .single-toc-list::before { left: 45px; }
-  .single-toc-list li { padding: 10px 20px; gap: 15px; }
-  .single-toc-list li.is-sub { padding-left: 75px; }
-  .single-toc-list li.is-sub::before { left: 55px; }
+  .single-toc-header { padding: 20px; }
+  .single-toc-title { font-size: 12px; letter-spacing: 1px; }
+  .single-toc-main { padding: 15px 0; }
+  .single-toc-list::before { left: 35px; }
+  .single-toc-list li { padding: 10px 15px; gap: 12px; }
+  .toc-sidebar-num { width: 26px; height: 26px; font-size: 10px; }
+  .single-toc-list a { font-size: 14px; }
+  .single-toc-list li.is-sub { padding-left: 62px; }
+  .single-toc-list li.is-sub::before { left: 45px; }
 }
 
 [data-theme='dark'] .single-toc { background: #1C1C1C; }

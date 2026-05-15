@@ -16,16 +16,15 @@
     let counter = 1;
     headings.forEach((heading) => {
       const text = heading.textContent.trim().replace(/[→\u2192]/g, '');
-      if (!text) return;
+      
+      // Skip "Inside this Article" or empty text
+      if (!text || text.toLowerCase().includes('inside this article')) return;
+      
       const id = heading.id || 'section-' + counter;
       heading.id = id;
       const tag = heading.tagName.toLowerCase();
-      
-      // We only show numbers for H2 (main sections)
-      // If you want numbers for H3 too, we can adjust this
       const isMain = tag === 'h2';
       const num = counter.toString().padStart(2, '0');
-
       let cls = tag === 'h3' ? 'is-sub' : (tag === 'h4' ? 'is-sub2' : '');
       
       html += `
@@ -41,13 +40,17 @@
     list.innerHTML = html;
     toc.classList.add('is-ready');
 
-    const toggle = toc.querySelector('.single-toc-toggle');
-    if (toggle) {
-      toggle.onclick = () => {
+    // Fixed Toggle Logic
+    const toggleBtn = toc.querySelector('.single-toc-toggle');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function(e) {
+        e.preventDefault();
         toc.classList.toggle('is-collapsed');
-        const span = toggle.querySelector('span');
-        if (span) span.textContent = toc.classList.contains('is-collapsed') ? 'Show' : 'Hide';
-      };
+        const span = toggleBtn.querySelector('span');
+        if (span) {
+          span.textContent = toc.classList.contains('is-collapsed') ? 'Show' : 'Hide';
+        }
+      });
     }
 
     // Scroll Spy
