@@ -13,22 +13,29 @@
     if (headings.length < 2) return;
 
     let html = '';
-    headings.forEach((heading, index) => {
+    let counter = 1;
+    headings.forEach((heading) => {
       const text = heading.textContent.trim().replace(/[→\u2192]/g, '');
       if (!text) return;
-      const id = heading.id || 'section-' + (index + 1);
+      const id = heading.id || 'section-' + counter;
       heading.id = id;
       const tag = heading.tagName.toLowerCase();
-      const num = (index + 1).toString().padStart(2, '0');
+      
+      // We only show numbers for H2 (main sections)
+      // If you want numbers for H3 too, we can adjust this
+      const isMain = tag === 'h2';
+      const num = counter.toString().padStart(2, '0');
 
       let cls = tag === 'h3' ? 'is-sub' : (tag === 'h4' ? 'is-sub2' : '');
       
       html += `
         <li class="${cls}">
-          <div class="toc-sidebar-num">${num}</div>
+          ${isMain ? `<div class="toc-sidebar-num">${num}</div>` : ''}
           <a href="#${id}" data-toc-link="${id}">${text}</a>
           <svg class="toc-chevron" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
         </li>`;
+      
+      if (isMain) counter++;
     });
 
     list.innerHTML = html;
