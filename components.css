@@ -3051,30 +3051,58 @@ body:not(.is-homepage) .latest-home-block {
 .single-comments { margin-top: 20px; }
 /* Typography Cleanup Complete */
 
-/* Fix Duplicate Image: Hide first image in post body if it is the same as Hero */
+/* Fix Duplicate Image: CLEANED */
 .single-hero + #postToc + .single-body .separator:first-child,
 .single-hero + .single-body .separator:first-child {
   display: none !important;
 }
 
 /* Dark Mode Comment Button Fix */
-[data-theme=" dark\] #comment-editor-src,
-[data-theme=\dark\] .comment-reply,
-[data-theme=\dark\] .post-comment-link,
-[data-theme=\dark\] #comment-holder .comment-actions a,
-[data-theme=\dark\] .continue a {
- background: #262626 !important;
- color: #fff !important;
- border: 1px solid #333 !important;
- padding: 8px 20px !important;
- border-radius: 8px !important;
- text-decoration: none !important;
- display: inline-block !important;
- font-weight: 600 !important;
+[data-theme='dark'] #comment-editor-src,
+[data-theme='dark'] .comment-reply,
+[data-theme='dark'] .post-comment-link,
+[data-theme='dark'] #comment-holder .comment-actions a,
+[data-theme='dark'] .continue a {
+  background: #262626 !important;
+  color: #fff !important;
+  border: 1px solid #333 !important;
+  padding: 8px 20px !important;
+  border-radius: 8px !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+  font-weight: 600 !important;
 }
 
-[data-theme=\dark\] .comment-reply:hover,
-[data-theme=\dark\] .post-comment-link:hover {
+[data-theme='dark'] .comment-reply:hover,
+[data-theme='dark'] .post-comment-link:hover {
  background: #fff !important;
  color: #000 !important;
+}
+
+/* Advanced Blogger Comment Dark Mode Fix */
+[data-theme='dark'] #comment-editor, 
+[data-theme='dark'] #comment-editor-src,
+[data-theme='dark'] .comment-thread iframe {
+  filter: invert(0.9) hue-rotate(180deg) !important;
+  background: transparent !important;
+}
+
+
+[data-theme='dark'] .comments, 
+[data-theme='dark'] #comments,
+[data-theme='dark'] .comment-thread {
+  background: #121212 !important;
+  color: #eee !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  border: 1px solid #222 !important;
+}
+
+[data-theme='dark'] .ai-assistant, 
+[data-theme='dark'] .post-share, 
+[data-theme='dark'] .single-extras, 
+[data-theme='dark'] .author-box-wrap { 
+  background: #1A1A1A !important; 
+  border-color: #222 !important; 
+  color: #fff !important; 
 }
