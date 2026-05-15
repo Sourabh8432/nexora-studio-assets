@@ -442,6 +442,48 @@ pre:hover .copy-code-btn { opacity: 1; }
 [data-theme='dark'] .nx-alert.is-success { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
 [data-theme='dark'] .nx-highlights { background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 255, 255, 0.08); }
 
+/* Table Component - Premium UI */
+.nx-table-container {
+  overflow-x: auto;
+  margin: 35px 0;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.nx-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 15px;
+}
+
+.nx-table th {
+  background: var(--surface-color);
+  padding: 16px 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--text-color);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.nx-table td {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
+  opacity: 0.9;
+}
+
+.nx-table tr:last-child td { border-bottom: 0; }
+
+.nx-table tr:hover td {
+  background: rgba(var(--primary-rgb, 59, 130, 246), 0.02);
+}
+
+[data-theme='dark'] .nx-table th { background: rgba(255,255,255,0.05); }
+[data-theme='dark'] .nx-table td { border-color: rgba(255,255,255,0.05); }
+
 
 .site-header-wrapper { position: relative; padding-top: 30px; margin-bottom: 26px; z-index: 10002; }
 .site-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 26px; }
