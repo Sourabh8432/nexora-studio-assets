@@ -1529,6 +1529,12 @@ font-weight: 800;
 .blog-pager a:hover, .blog-pager button:hover { background: var(--text-color); color: var(--bg-color); }
 .blog-pager button.is-loading { opacity: 0.5; cursor: wait; }
 
+/* Prevent Duplicate Images (Hide first body image if Hero is present) */
+.single-body .separator:first-child,
+.single-body > div:first-child > .separator {
+  display: none !important;
+}
+
 .single-post { max-width: 860px; }
 .single-header { margin-bottom: 42px; }
 .single-title {
@@ -1721,7 +1727,6 @@ font-weight: 800;
   transition: all 0.3s ease;
 }
 
-/* ... existing styles ... */
 
 @media (max-width: 768px) {
   .single-toc-header { padding: 20px; }
